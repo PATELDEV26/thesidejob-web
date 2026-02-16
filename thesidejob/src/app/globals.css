@@ -1,0 +1,187 @@
+@import "tailwindcss";
+
+/* Tailwind v4: class-based dark mode via next-themes */
+@custom-variant dark (.dark &);
+
+@theme inline {
+  --color-accent-red: #EF4444;
+  --color-accent-indigo: #6366F1;
+  --color-accent-blue: #3B82F6;
+  --color-accent-orange: #F97316;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ─── Base ─── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #F9FAFB;
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark body */
+.dark body,
+:is(.dark) body {
+  background: #0F172A;
+  color: #F1F5F9;
+}
+
+/* ─── Glassmorphism ─── */
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+:is(.dark) .glass {
+  background: rgba(15, 23, 42, 0.8);
+  border-bottom-color: rgba(51, 65, 85, 0.5);
+}
+
+/* ─── Focus rings ─── */
+.glow-focus:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35), 0 0 20px rgba(99, 102, 241, 0.15);
+  border-color: #6366F1;
+}
+
+.glow-focus-red:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3), 0 0 20px rgba(239, 68, 68, 0.12);
+  border-color: #EF4444;
+}
+
+/* ─── Gradient text ─── */
+.gradient-text {
+  background: linear-gradient(135deg, #6366F1, #3B82F6, #EF4444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Buttons ─── */
+.btn-primary {
+  background: linear-gradient(135deg, #6366F1, #3B82F6);
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #374151;
+  border: 2px solid #D1D5DB;
+  transition: all 0.3s ease;
+}
+
+:is(.dark) .btn-secondary {
+  color: #CBD5E1;
+  border-color: #334155;
+}
+
+.btn-secondary:hover {
+  border-color: #6366F1;
+  color: #6366F1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+}
+
+:is(.dark) .btn-secondary:hover {
+  color: #818CF8;
+  border-color: #818CF8;
+}
+
+/* ─── Card hover lift ─── */
+.card-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+:is(.dark) .card-lift:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* ─── Coming Soon animations ─── */
+.coming-soon-badge {
+  animation: comingSoonPulse 2s ease-in-out infinite;
+}
+
+@keyframes comingSoonPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 12px 4px rgba(239, 68, 68, 0.15);
+  }
+}
+
+.coming-soon-glow {
+  animation: cardGlow 3s ease-in-out infinite;
+}
+
+@keyframes cardGlow {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+/* ─── Dark-mode surface tokens (used inline) ─── */
+/* Surface 0: #0F172A  (body / deepest) */
+/* Surface 1: #1E293B  (cards, sidebars) */
+/* Surface 2: #334155  (elevated, inputs) */
+/* Text primary: #F1F5F9 */
+/* Text secondary: #94A3B8 */
+/* Border: #334155 */
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+
+:is(.dark) ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+:is(.dark) ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
