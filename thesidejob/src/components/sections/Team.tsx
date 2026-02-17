@@ -1,87 +1,31 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef, useState, useEffect, useCallback, useMemo } from "react";
-import { Github, Linkedin, AlertTriangle, RefreshCw } from "lucide-react";
-import { getSupabase } from "@/lib/supabase";
+import { useRef, useState, useEffect, useMemo } from "react";
+import { Github, Linkedin } from "lucide-react";
+import { mockTeamMembers, type TeamMember } from "@/data/mockData";
 import TeamProfileModal from "@/components/TeamProfileModal";
-
-type TeamMember = {
-    id: string;
-    name: string;
-    initials: string;
-    role: string;
-    bio: string;
-    skills: string[];
-    gradient: string;
-    github: string;
-    linkedin: string;
-    avatar_url?: string;
-};
-
-/* ── Skeleton ── */
-function SkeletonCard({ large }: { large?: boolean }) {
-    return (
-        <div
-            className={`bg-[#F9FAFB] dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-slate-700/50 overflow-hidden animate-pulse ${large ? "lg:col-span-2" : ""
-                }`}
-        >
-            <div className="p-8">
-                <div className="w-16 h-16 rounded-2xl bg-gray-200 dark:bg-slate-700 mb-5" />
-                <div className="w-40 h-5 bg-gray-200 dark:bg-slate-700 rounded mb-2" />
-                <div className="w-24 h-4 bg-gray-200 dark:bg-slate-700 rounded mb-1" />
-                <div className="w-48 h-3 bg-gray-200 dark:bg-slate-700 rounded" />
-            </div>
-        </div>
-    );
-}
 
 export default function Team() {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
     const [mounted, setMounted] = useState(false);
-    const [members, setMembers] = useState<TeamMember[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [activeSkill, setActiveSkill] = useState<string>("All");
     const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
 
     useEffect(() => { setMounted(true); }, []);
 
-    const fetchMembers = useCallback(async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const supabase = getSupabase();
-            const { data, error: sbError } = await supabase
-                .from("team_members")
-                .select("*");
-
-            if (sbError) throw sbError;
-            setMembers(data ?? []);
-        } catch (err: unknown) {
-            const msg = err instanceof Error ? err.message : "Failed to load team.";
-            setError(msg);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchMembers();
-    }, [fetchMembers]);
-
     /* Derive unique skills from all members */
     const allSkills = useMemo(() => {
         const set = new Set<string>();
-        members.forEach((m) => m.skills?.forEach((s) => set.add(s)));
+        mockTeamMembers.forEach((m) => m.skills?.forEach((s) => set.add(s)));
         return ["All", ...Array.from(set).sort()];
-    }, [members]);
+    }, []);
 
     const filtered =
         activeSkill === "All"
-            ? members
-            : members.filter((m) => m.skills?.includes(activeSkill));
+            ? mockTeamMembers
+            : mockTeamMembers.filter((m) => m.skills?.includes(activeSkill));
 
     if (!mounted) return null;
 
@@ -108,7 +52,7 @@ export default function Team() {
                     </motion.div>
 
                     {/* Skill Filter Pills */}
-                    {!loading && !error && allSkills.length > 1 && (
+                    {allSkills.length > 1 && (
                         <motion.div
                             className="flex justify-center gap-2 mb-10 flex-wrap"
                             initial={{ opacity: 0, y: 15 }}
@@ -130,45 +74,9 @@ export default function Team() {
                         </motion.div>
                     )}
 
-                    {/* Error */}
-                    {error && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="max-w-md mx-auto mb-10 flex items-center gap-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-xl px-5 py-4"
-                        >
-                            <AlertTriangle size={18} className="text-red-500 shrink-0" />
-                            <p className="text-sm text-red-600 dark:text-red-400 flex-1">{error}</p>
-                            <button
-                                onClick={fetchMembers}
-                                className="p-1.5 text-red-500 hover:text-red-700 dark:hover:text-red-300 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                                aria-label="Retry"
-                            >
-                                <RefreshCw size={16} />
-                            </button>
-                        </motion.div>
-                    )}
-
-                    {/* Loading */}
-                    {loading && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                            <SkeletonCard large />
-                            <SkeletonCard />
-                            <SkeletonCard />
-                            <SkeletonCard />
-                            <SkeletonCard />
-                        </div>
-                    )}
-
                     {/* Bento Grid */}
-                    {!loading && !error && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                            {filtered.length === 0 && (
-                                <p className="col-span-full text-center text-gray-400 dark:text-slate-500 py-12">
-                                    No team members match this skill.
-                                </p>
-                            )}
-                            {filtered.map((member, i) => {
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {filtered.map((member, i) => {
                                 const isLarge = i < 2;
                                 return (
                                     <motion.div
@@ -250,7 +158,6 @@ export default function Team() {
                                 );
                             })}
                         </div>
-                    )}
                 </div>
             </section>
 

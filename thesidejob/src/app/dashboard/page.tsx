@@ -76,13 +76,18 @@ export default function DashboardPage() {
     const [activeChannel, setActiveChannel] = useState("general");
     const [messageInput, setMessageInput] = useState("");
     const [localMessages, setLocalMessages] = useState<Record<string, Message[]>>({});
-    const [founderName, setFounderName] = useState<string | null>(null);
+    const [founderName, setFounderName] = useState<string>("Founder");
+    const [mounted, setMounted] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const currentMessages = [
         ...(channelMessages[activeChannel] || []),
         ...(localMessages[activeChannel] || []),
     ];
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -121,6 +126,8 @@ export default function DashboardPage() {
         setSidebarOpen(false);
     };
 
+    if (!mounted) return null;
+
     return (
         <div className="h-screen flex flex-col bg-[#F9FAFB] dark:bg-[#0F172A] pt-16">
             {/* ═══════════════ WELCOME BANNER ═══════════════ */}
@@ -140,7 +147,7 @@ export default function DashboardPage() {
                         <h1 className="text-lg font-bold tracking-tight">
                             <span className="text-gray-900 dark:text-white">Welcome back, </span>
                             <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-rose-500 bg-clip-text text-transparent">
-                                {founderName || "Founder"}!
+                                {founderName}!
                             </span>
                         </h1>
                         <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
