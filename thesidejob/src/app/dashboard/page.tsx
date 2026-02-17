@@ -12,7 +12,9 @@ import {
     Menu,
     X,
     Wrench,
+    Sparkles,
 } from "lucide-react";
+import { createBrowserClient } from "@supabase/ssr";
 
 /* ── Founders ── */
 const founders = [
@@ -74,6 +76,7 @@ export default function DashboardPage() {
     const [activeChannel, setActiveChannel] = useState("general");
     const [messageInput, setMessageInput] = useState("");
     const [localMessages, setLocalMessages] = useState<Record<string, Message[]>>({});
+    const [founderName, setFounderName] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const currentMessages = [
@@ -84,6 +87,18 @@ export default function DashboardPage() {
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [currentMessages.length]);
+
+    useEffect(() => {
+        const supabase = createBrowserClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        );
+        supabase.auth.getUser().then(({ data: { user } }) => {
+            if (user?.user_metadata?.full_name) {
+                setFounderName(user.user_metadata.full_name);
+            }
+        });
+    }, []);
 
     const handleSend = () => {
         if (!messageInput.trim()) return;
@@ -108,6 +123,35 @@ export default function DashboardPage() {
 
     return (
         <div className="h-screen flex flex-col bg-[#F9FAFB] dark:bg-[#0F172A] pt-16">
+            {/* ═══════════════ WELCOME BANNER ═══════════════ */}
+            {founderName && (
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    className="relative overflow-hidden border-b border-gray-100 dark:border-slate-700/50 bg-white/60 dark:bg-[#1E293B]/60 backdrop-blur-xl"
+                >
+                    {/* subtle gradient glow */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-rose-500/5 dark:from-indigo-500/10 dark:via-purple-500/10 dark:to-rose-500/10" />
+                    <div className="relative flex items-center gap-3 px-6 py-4">
+                        <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/20">
+                            <Sparkles size={18} className="text-white" />
+                        </div>
+                        <div>
+                            <h1 className="text-lg font-bold tracking-tight">
+                                <span className="text-gray-900 dark:text-white">Welcome back, </span>
+                                <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-rose-500 bg-clip-text text-transparent">
+                                    {founderName}!
+                                </span>
+                            </h1>
+                            <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+                                Let&apos;s ship something great today.
+                            </p>
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+
             <div className="flex flex-1 overflow-hidden">
                 {/* ═══════════════ LEFT SIDEBAR ═══════════════ */}
                 <AnimatePresence>
@@ -156,8 +200,8 @@ export default function DashboardPage() {
                                     whileTap={{ scale: 0.97 }}
                                     onClick={() => selectChannel(ch.id)}
                                     className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm transition-colors ${activeChannel === ch.id
-                                            ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold"
-                                            : "text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white"
+                                        ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold"
+                                        : "text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white"
                                         }`}
                                 >
                                     <ch.icon size={15} className="shrink-0 opacity-60" />
@@ -182,8 +226,8 @@ export default function DashboardPage() {
                                     whileTap={{ scale: 0.97 }}
                                     onClick={() => selectChannel(ch.id)}
                                     className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm transition-colors ${activeChannel === ch.id
-                                            ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold"
-                                            : "text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white"
+                                        ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold"
+                                        : "text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white"
                                         }`}
                                 >
                                     <ch.icon size={15} className="shrink-0 opacity-60" />
@@ -301,8 +345,8 @@ export default function DashboardPage() {
                                 whileTap={{ scale: 0.9 }}
                                 onClick={handleSend}
                                 className={`p-1.5 rounded-lg transition-colors ${messageInput.trim()
-                                        ? "text-white bg-indigo-500 hover:bg-indigo-600"
-                                        : "text-gray-300 dark:text-slate-600 cursor-not-allowed"
+                                    ? "text-white bg-indigo-500 hover:bg-indigo-600"
+                                    : "text-gray-300 dark:text-slate-600 cursor-not-allowed"
                                     }`}
                                 aria-label="Send"
                             >
