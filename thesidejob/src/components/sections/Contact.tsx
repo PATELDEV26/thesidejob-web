@@ -2,17 +2,49 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { Send } from "lucide-react";
+import { Send, Loader2, CheckCircle2 } from "lucide-react";
 
 export default function Contact() {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
     const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setSubmitted(true);
-        setTimeout(() => setSubmitted(false), 3000);
+        setLoading(true);
+        setError(null);
+
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+        const name = formData.get("name") as string;
+        const email = formData.get("email") as string;
+        const message = formData.get("message") as string;
+
+        try {
+            const res = await fetch("/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, message }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || "Failed to send message.");
+            }
+
+            setSubmitted(true);
+            form.reset();
+            setTimeout(() => setSubmitted(false), 4000);
+        } catch (err: unknown) {
+            const errorMessage =
+                err instanceof Error ? err.message : "Something went wrong. Please try again.";
+            setError(errorMessage);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -49,10 +81,12 @@ export default function Contact() {
                             </label>
                             <input
                                 id="contact-name"
+                                name="name"
                                 type="text"
                                 placeholder="Your name"
                                 className="glow-focus-red w-full px-4 py-3 bg-[#F9FAFB] dark:bg-[#334155] border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 transition-all duration-200"
                                 required
+                                disabled={loading}
                             />
                         </div>
                         <div>
@@ -61,10 +95,12 @@ export default function Contact() {
                             </label>
                             <input
                                 id="contact-email"
+                                name="email"
                                 type="email"
                                 placeholder="you@example.com"
                                 className="glow-focus-red w-full px-4 py-3 bg-[#F9FAFB] dark:bg-[#334155] border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 transition-all duration-200"
                                 required
+                                disabled={loading}
                             />
                         </div>
                     </div>
@@ -75,19 +111,47 @@ export default function Contact() {
                         </label>
                         <textarea
                             id="contact-message"
+                            name="message"
                             rows={5}
                             placeholder="Tell us about your idea..."
                             className="glow-focus-red w-full px-4 py-3 bg-[#F9FAFB] dark:bg-[#334155] border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 transition-all duration-200 resize-none"
                             required
+                            disabled={loading}
                         />
                     </div>
+
+                    {error && (
+                        <motion.p
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-sm text-red-500 dark:text-red-400 font-medium"
+                        >
+                            ⚠ {error}
+                        </motion.p>
+                    )}
+
+                    {submitted && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex items-center gap-2 text-sm text-emerald-500 dark:text-emerald-400 font-medium"
+                        >
+                            <CheckCircle2 size={18} />
+                            Your message has been sent successfully!
+                        </motion.div>
+                    )}
 
                     <motion.button
                         type="submit"
                         whileTap={{ scale: 0.95 }}
-                        className="btn-primary w-full sm:w-auto px-8 py-3.5 text-sm font-semibold rounded-xl flex items-center justify-center gap-2"
+                        disabled={loading}
+                        className="btn-primary w-full sm:w-auto px-8 py-3.5 text-sm font-semibold rounded-xl flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                        {submitted ? (
+                        {loading ? (
+                            <>
+                                Sending… <Loader2 size={16} className="animate-spin" />
+                            </>
+                        ) : submitted ? (
                             "Message Sent! ✓"
                         ) : (
                             <>
