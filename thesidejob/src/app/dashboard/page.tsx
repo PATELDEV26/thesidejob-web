@@ -124,33 +124,31 @@ export default function DashboardPage() {
     return (
         <div className="h-screen flex flex-col bg-[#F9FAFB] dark:bg-[#0F172A] pt-16">
             {/* ═══════════════ WELCOME BANNER ═══════════════ */}
-            {founderName && (
-                <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
-                    className="relative overflow-hidden border-b border-gray-100 dark:border-slate-700/50 bg-white/60 dark:bg-[#1E293B]/60 backdrop-blur-xl"
-                >
-                    {/* subtle gradient glow */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-rose-500/5 dark:from-indigo-500/10 dark:via-purple-500/10 dark:to-rose-500/10" />
-                    <div className="relative flex items-center gap-3 px-6 py-4">
-                        <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/20">
-                            <Sparkles size={18} className="text-white" />
-                        </div>
-                        <div>
-                            <h1 className="text-lg font-bold tracking-tight">
-                                <span className="text-gray-900 dark:text-white">Welcome back, </span>
-                                <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-rose-500 bg-clip-text text-transparent">
-                                    {founderName}!
-                                </span>
-                            </h1>
-                            <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
-                                Let&apos;s ship something great today.
-                            </p>
-                        </div>
+            <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="relative overflow-hidden border-b border-gray-100 dark:border-slate-700/50 bg-white/60 dark:bg-[#1E293B]/60 backdrop-blur-xl"
+            >
+                {/* subtle gradient glow */}
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-rose-500/5 dark:from-indigo-500/10 dark:via-purple-500/10 dark:to-rose-500/10" />
+                <div className="relative flex items-center gap-3 px-6 py-4">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/20">
+                        <Sparkles size={18} className="text-white" />
                     </div>
-                </motion.div>
-            )}
+                    <div>
+                        <h1 className="text-lg font-bold tracking-tight">
+                            <span className="text-gray-900 dark:text-white">Welcome back, </span>
+                            <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-rose-500 bg-clip-text text-transparent">
+                                {founderName || "Founder"}!
+                            </span>
+                        </h1>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+                            Let&apos;s ship something great today.
+                        </p>
+                    </div>
+                </div>
+            </motion.div>
 
             <div className="flex flex-1 overflow-hidden">
                 {/* ═══════════════ LEFT SIDEBAR ═══════════════ */}
