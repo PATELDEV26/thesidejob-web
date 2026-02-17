@@ -39,11 +39,14 @@ function SkeletonCard({ large }: { large?: boolean }) {
 export default function Team() {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const [mounted, setMounted] = useState(false);
     const [members, setMembers] = useState<TeamMember[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeSkill, setActiveSkill] = useState<string>("All");
     const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+
+    useEffect(() => { setMounted(true); }, []);
 
     const fetchMembers = useCallback(async () => {
         setLoading(true);
@@ -80,6 +83,8 @@ export default function Team() {
             ? members
             : members.filter((m) => m.skills?.includes(activeSkill));
 
+    if (!mounted) return null;
+
     return (
         <>
             <section id="team" className="py-24 sm:py-32 bg-white dark:bg-[#0F172A]">
@@ -115,8 +120,8 @@ export default function Team() {
                                     key={skill}
                                     onClick={() => setActiveSkill(skill)}
                                     className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${activeSkill === skill
-                                            ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/25"
-                                            : "bg-white dark:bg-[#1E293B] text-gray-600 dark:text-slate-400 border border-gray-200 dark:border-slate-700/50 hover:border-indigo-300 dark:hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+                                        ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/25"
+                                        : "bg-white dark:bg-[#1E293B] text-gray-600 dark:text-slate-400 border border-gray-200 dark:border-slate-700/50 hover:border-indigo-300 dark:hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
                                         }`}
                                 >
                                     {skill}

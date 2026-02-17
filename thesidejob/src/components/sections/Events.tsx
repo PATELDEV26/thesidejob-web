@@ -49,10 +49,13 @@ const typeBadge: Record<string, string> = {
 export default function Events() {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const [mounted, setMounted] = useState(false);
     const [events, setEvents] = useState<EventRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [countdown, setCountdown] = useState<Countdown | null>(null);
+
+    useEffect(() => { setMounted(true); }, []);
 
     const fetchEvents = useCallback(async () => {
         setLoading(true);
@@ -90,6 +93,8 @@ export default function Events() {
     }, [nextEvent]);
 
     const isPast = (date: string) => new Date(date).getTime() <= Date.now();
+
+    if (!mounted) return null;
 
     return (
         <section id="events" className="py-24 sm:py-32 bg-white dark:bg-[#0F172A]">

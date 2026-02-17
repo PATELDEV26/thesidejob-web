@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
     ChevronRight,
     ChevronLeft,
@@ -37,12 +37,15 @@ const INITIAL: FormData = {
 export default function ProjectSubmissionForm() {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const [mounted, setMounted] = useState(false);
     const [step, setStep] = useState(0);
     const [form, setForm] = useState<FormData>(INITIAL);
     const [techInput, setTechInput] = useState("");
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => { setMounted(true); }, []);
 
     const update = <K extends keyof FormData>(key: K, val: FormData[K]) =>
         setForm((f) => ({ ...f, [key]: val }));
@@ -102,6 +105,8 @@ export default function ProjectSubmissionForm() {
 
     const inputClass =
         "glow-focus w-full px-4 py-3 bg-[#F9FAFB] dark:bg-[#334155] border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 transition-all";
+
+    if (!mounted) return null;
 
     return (
         <section id="submit" className="py-24 sm:py-32 bg-[#F9FAFB] dark:bg-[#0F172A]">
@@ -164,10 +169,10 @@ export default function ProjectSubmissionForm() {
                                     <div
                                         key={s.label}
                                         className={`flex-1 flex items-center justify-center gap-2 py-4 text-xs font-semibold transition-colors ${i === step
-                                                ? "text-indigo-600 dark:text-indigo-400 bg-indigo-50/60 dark:bg-indigo-950/20"
-                                                : i < step
-                                                    ? "text-emerald-500 dark:text-emerald-400"
-                                                    : "text-gray-400 dark:text-slate-600"
+                                            ? "text-indigo-600 dark:text-indigo-400 bg-indigo-50/60 dark:bg-indigo-950/20"
+                                            : i < step
+                                                ? "text-emerald-500 dark:text-emerald-400"
+                                                : "text-gray-400 dark:text-slate-600"
                                             }`}
                                     >
                                         <s.icon size={14} />

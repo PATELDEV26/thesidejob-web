@@ -52,10 +52,13 @@ const categoryColors: Record<string, string> = {
 export default function LiveUpdates() {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const [mounted, setMounted] = useState(false);
     const [updates, setUpdates] = useState<ProjectUpdate[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeFilter, setActiveFilter] = useState<Filter>("All");
+
+    useEffect(() => { setMounted(true); }, []);
 
     const fetchUpdates = async () => {
         setLoading(true);
@@ -85,6 +88,8 @@ export default function LiveUpdates() {
         activeFilter === "All"
             ? updates
             : updates.filter((u) => u.category === activeFilter);
+
+    if (!mounted) return null;
 
     return (
         <section id="updates" className="py-24 sm:py-32 bg-[#F9FAFB] dark:bg-[#0F172A]">
@@ -118,8 +123,8 @@ export default function LiveUpdates() {
                             key={f}
                             onClick={() => setActiveFilter(f)}
                             className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${activeFilter === f
-                                    ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/25"
-                                    : "bg-white dark:bg-[#1E293B] text-gray-600 dark:text-slate-400 border border-gray-200 dark:border-slate-700/50 hover:border-indigo-300 dark:hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
+                                ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/25"
+                                : "bg-white dark:bg-[#1E293B] text-gray-600 dark:text-slate-400 border border-gray-200 dark:border-slate-700/50 hover:border-indigo-300 dark:hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-300"
                                 }`}
                         >
                             {f}
