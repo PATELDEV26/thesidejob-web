@@ -1,13 +1,45 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 
 export default function LoginPage() {
+    const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+        setLoading(true);
+
+        try {
+            const res = await fetch("/api/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || "Login failed");
+            }
+
+            router.push("/dashboard");
+        } catch {
+            setError("Unauthorized: Only founders can enter!");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center px-6 py-20 bg-[#F9FAFB] dark:bg-[#0F172A]">
@@ -44,7 +76,7 @@ export default function LoginPage() {
                         <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700" />
                     </div>
 
-                    <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                    <form className="space-y-4" onSubmit={handleSubmit}>
                         <div>
                             <label htmlFor="login-email" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
                                 Email
@@ -55,8 +87,11 @@ export default function LoginPage() {
                                     id="login-email"
                                     type="email"
                                     placeholder="you@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     className="glow-focus w-full pl-10 pr-4 py-3 bg-[#F9FAFB] dark:bg-[#334155] border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 transition-all"
                                     required
+                                    disabled={loading}
                                 />
                             </div>
                         </div>
@@ -71,8 +106,11 @@ export default function LoginPage() {
                                     id="login-password"
                                     type={showPassword ? "text" : "password"}
                                     placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     className="glow-focus w-full pl-10 pr-11 py-3 bg-[#F9FAFB] dark:bg-[#334155] border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 transition-all"
                                     required
+                                    disabled={loading}
                                 />
                                 <button
                                     type="button"
@@ -94,8 +132,28 @@ export default function LoginPage() {
                             </a>
                         </div>
 
-                        <button type="submit" className="btn-primary w-full py-3 text-sm font-semibold rounded-xl mt-2">
-                            Sign In
+                        {error && (
+                            <motion.p
+                                initial={{ opacity: 0, y: -5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="text-sm text-red-500 dark:text-red-400 font-medium text-center"
+                            >
+                                ⚠ {error}
+                            </motion.p>
+                        )}
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="btn-primary w-full py-3 text-sm font-semibold rounded-xl mt-2 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                            {loading ? (
+                                <>
+                                    Signing In… <Loader2 size={16} className="animate-spin" />
+                                </>
+                            ) : (
+                                "Sign In"
+                            )}
                         </button>
                     </form>
 
