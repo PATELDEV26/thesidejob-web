@@ -76,7 +76,7 @@ export default function DashboardPage() {
     const [activeChannel, setActiveChannel] = useState("general");
     const [messageInput, setMessageInput] = useState("");
     const [localMessages, setLocalMessages] = useState<Record<string, Message[]>>({});
-    const [founderName, setFounderName] = useState<string>("Founder");
+    const [founderName, setFounderName] = useState<string>("Dev!");
     const [mounted, setMounted] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
